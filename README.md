@@ -1,79 +1,63 @@
-# IQL-TECH
-ASSIGNMENT
-NeighborFit Project Assignment
- Project Brief
- Build a full-stack web application that solves the neighborhood-lifestyle 
-matching problem through systematic research, data analysis, and algorithmic 
-thinking.
- Core Requirements
- Problem Analysis & Research (50% of grade)
- ●
- ●
- ●
- ●
- Identify and define the core problem through user research
- Analyze existing solutions and their gaps
- Develop hypotheses about user behavior and test them
- Use data to validate or invalidate your assumptions
- Technical Problem-Solving (40% of grade)
- ●
- ●
- ●
- ●
- Design and implement a matching algorithm
- Handle real-world data collection and processing challenges
- Build scalable data structures and APIs
- Solve integration challenges with external data sources
- Systems Thinking (10% of grade)
- ●
- ●
- ●
- Document trade-offs and decision rationale
- Demonstrate understanding of scalability constraints
- Show systematic approach to complex problem decomposition
- Constraints & Problem Parameters
- Resource Constraints
- ●
- ●
- ●
- Zero budget - solve using only free resources
- 2-week timeline - scope appropriately
- Limited data access - be creative with data acquisition
- Technical Constraints
- ●
- ●
- ●
- Must work with real neighborhood data
- Must be functional (not just mockups)
- Must handle edge cases and data inconsistencies
- Deliverables
- Technical Implementation
- 1.
- 2.
- 3.
- Functional application with working algorithm
- Data processing pipeline (however basic)
- Source code with clear problem-solving documentation
- Problem-Solving Documentation
- 1.
- 2.
- 3.
- 4.
- 5.
- Problem definition and hypothesis formation
- Research methodology and findings analysis
- Algorithm design rationale and trade-offs
- Data challenges encountered and solutions implemented
- Testing approach and validation results
-Analysis & Reflection
- ●
- ●
- ●
- Critical evaluation of your solution's effectiveness
- Identified limitations and their root causes
- Systematic approach to future improvements
- Submission Requirements
- ●
- ●
- GitHub repository with documented code
- Working deployed application
+/ src/App.jsx
+// Make sure you name the file App.jsx or App.js depending on your build setup
+import React, { useState } from "react";
+
+export default function App() {
+  const [weights, setWeights] = useState({
+    safety_weight: 0.4,
+    commute_weight: 0.3,
+    amenities_weight: 0.2,
+    schools_weight: 0.1,
+  });
+  const [results, setResults] = useState([]);
+
+  const handleChange = (e) => {
+    setWeights({
+      ...weights,
+      [e.target.name]: parseFloat(e.target.value) || 0,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const response = await fetch("/match", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(weights),
+    });
+    const data = await response.json();
+    setResults(data);
+  };
+
+  return (
+    <div>
+      <h1>NeighborFit</h1>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Safety Weight: <input type="number" step="0.1" name="safety_weight" value={weights.safety_weight} onChange={handleChange} />
+        </label>
+        <br />
+        <label>
+          Commute Weight: <input type="number" step="0.1" name="commute_weight" value={weights.commute_weight} onChange={handleChange} />
+        </label>
+        <br />
+        <label>
+          Amenities Weight: <input type="number" step="0.1" name="amenities_weight" value={weights.amenities_weight} onChange={handleChange} />
+        </label>
+        <br />
+        <label>
+          Schools Weight: <input type="number" step="0.1" name="schools_weight" value={weights.schools_weight} onChange={handleChange} />
+        </label>
+        <br />
+        <button type="submit">Find Match</button>
+      </form>
+
+      <h2>Results:</h2>
+      <ul>
+        {results.map((n) => (
+          <li key={n.name}>{n.name}: {n.score}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
